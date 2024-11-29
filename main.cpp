@@ -164,17 +164,36 @@ std::vector<Athlete> filterBySportAndEvent(const std::vector<Athlete>& athletes,
     return filtered;
 }
 void promptInput(sf::RenderWindow& window, sf::Font& font, std::string& sport, std::string& event) {
+    // Prompts
     sf::Text sportPrompt("Enter Sport: ", font, 30);
     sportPrompt.setPosition(50, 50);
 
-    sf::Text inputText("", font, 30);
-    inputText.setPosition(50, 100);
-
     sf::Text eventPrompt("Enter Event: ", font, 30);
-    eventPrompt.setPosition(50, 150);
+    eventPrompt.setPosition(50, 100);
 
+    // Options for sports and events
+    sf::Text sportOptions("Available Sports:\n1. Swimming\n2. Cycling\n3. Rowing", font, 20);
+    sportOptions.setPosition(50, 200);
+
+    sf::Text eventOptions("Available Events:\n1. 50m Butterfly\n2. 200m Freestyle\n3. Floor Routine", font, 20);
+    eventOptions.setPosition(50, 300);
+
+    // User input
+    sf::Text sportText("", font, 30);
+    sf::Text eventText("", font, 30);
+    sportText.setPosition(sportPrompt.getPosition().x + sportPrompt.getGlobalBounds().width + 5, sportPrompt.getPosition().y);
+    eventText.setPosition(eventPrompt.getPosition().x + eventPrompt.getGlobalBounds().width + 5, eventPrompt.getPosition().y);
+
+    // Input handling
+    sf::Text inputText("", font, 30);
     std::string currentInput = "";
     bool enteringSport = true;
+
+    sf::RectangleShape cursor(sf::Vector2f(2, 30)); // Thin vertical line
+    cursor.setFillColor(sf::Color::White);
+
+    sf::Clock clock;
+    bool cursorVisible = true;
 
     while (window.isOpen()) {
         sf::Event eventSFML;
@@ -190,10 +209,12 @@ void promptInput(sf::RenderWindow& window, sf::Font& font, std::string& sport, s
                 } else if (eventSFML.text.unicode == '\r') {
                     if (enteringSport) {
                         sport = currentInput;
+                        sportText.setString(sport);
                         enteringSport = false;
                         currentInput = "";
                     } else {
                         event = currentInput;
+                        eventText.setString(event);
                         return;
                     }
                 } else if (eventSFML.text.unicode < 128) {
@@ -202,20 +223,39 @@ void promptInput(sf::RenderWindow& window, sf::Font& font, std::string& sport, s
             }
         }
 
+        // Update input text and cursor position
         inputText.setString(currentInput);
+
+        if (enteringSport) {
+            inputText.setPosition(sportText.getPosition().x + sportText.getGlobalBounds().width + 5, sportText.getPosition().y);
+        } else {
+            inputText.setPosition(eventText.getPosition().x + eventText.getGlobalBounds().width + 5, eventText.getPosition().y);
+        }
+
+        cursor.setPosition(inputText.getPosition().x + inputText.getGlobalBounds().width + 2, inputText.getPosition().y);
+
+        if (clock.getElapsedTime().asMilliseconds() > 500) {
+            cursorVisible = !cursorVisible;
+            clock.restart();
+        }
 
         window.clear(sf::Color::Black);
         window.draw(sportPrompt);
+        window.draw(eventPrompt);
+        window.draw(sportText);
+        window.draw(eventText);
+        window.draw(inputText);
 
-        if (!enteringSport) {
-            window.draw(eventPrompt);
+        window.draw(sportOptions);
+        window.draw(eventOptions);
+
+        if (cursorVisible) {
+            window.draw(cursor);
         }
 
-        window.draw(inputText);
         window.display();
     }
 }
-
 
 // Main function
 int main() {
