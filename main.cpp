@@ -1,9 +1,4 @@
-//
-// Created by jai04 on 11/6/2024.
-//
-//helllo
-//llllll
-//
+
 #include <iostream>
 #include <fstream>
 #include <sstream>
@@ -260,6 +255,7 @@ void promptInput(sf::RenderWindow& window, sf::Font& font, std::string& sport, s
 // Main function
 int main() {
     vector<Athlete> athletes = loadAthleteData("athlete_data.csv");
+    //vector<Athlete> athletes = loadAthleteData("olympic_athlete_performance_data.csv");
 
     if (athletes.empty()) {
         cerr << "No athlete data available!" << endl;
