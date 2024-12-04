@@ -6,6 +6,7 @@
 #include <string>
 #include <algorithm>
 #include <chrono>
+#include <cstdlib>
 #include <SFML/Graphics.hpp>
 #include <SFML/Window.hpp>
 #include <SFML/System.hpp>
@@ -134,21 +135,6 @@ void quickSort(std::vector<Athlete>& athletes, int low, int high) {
         quickSort(athletes, pi + 1, high);
     }
 }
-
-// Display using SFML
-void displayBestPerformance(sf::RenderWindow& window, const Athlete& bestAthlete) {
-    sf::Font font;
-    font.loadFromFile("arial.ttf");
-
-    window.clear(sf::Color::White);
-    string row = "Best Performance: " + bestAthlete.name + " | Time: " + to_string(bestAthlete.race_time) + " seconds";
-    sf::Text text(row, font, 20);
-    text.setFillColor(sf::Color::Black);
-    text.setPosition(10, 10);
-    window.draw(text);
-
-    window.display();
-}
 std::vector<Athlete> filterBySportAndEvent(const std::vector<Athlete>& athletes, const std::string& sport, const std::string& event) {
     std::vector<Athlete> filtered;
     for (const auto& athlete : athletes) {
@@ -158,6 +144,49 @@ std::vector<Athlete> filterBySportAndEvent(const std::vector<Athlete>& athletes,
     }
     return filtered;
 }
+vector<Athlete> athletes = loadAthleteData("athlete_data.csv");
+string sport, event;
+
+
+vector<Athlete> filteredAthletes = filterBySportAndEvent(athletes, sport, event);
+
+// Display using SFML
+void displayBestPerformance(sf::RenderWindow& window, const Athlete& bestAthlete, double mergeSortTime, double quickSortTime) {
+    sf::Font font;
+    if (!font.loadFromFile("arial.ttf")) {
+        cerr << "Failed to load font!" << endl;
+        return;
+    }
+
+    window.clear(sf::Color::White);
+
+
+
+    // Display Merge Sort Time
+    sf::Text mergeSortText("Merge Sort Time: " +to_string(mergeSortTime) + " seconds", font, 20);
+    mergeSortText.setFillColor(sf::Color::Black);
+    mergeSortText.setPosition(10, 10);
+    window.draw(mergeSortText);
+
+    // Display Quick Sort Time
+    sf::Text quickSortText("Quick Sort Time: " + to_string(quickSortTime) + " seconds", font, 20);
+    quickSortText.setFillColor(sf::Color::Black);
+    quickSortText.setPosition(10, 40);
+    window.draw(quickSortText);
+
+    // Display Best Athlete Details
+    string athleteDetails = "Best Performance:\nAthlete: " + bestAthlete.name +
+                            "\nTime: " + to_string(bestAthlete.race_time) +
+                            " seconds\nCountry: " + bestAthlete.country;
+    sf::Text athleteText(athleteDetails, font, 20);
+    athleteText.setFillColor(sf::Color::Black);
+    athleteText.setPosition(10, 80);
+    window.draw(athleteText);
+
+    window.display();
+}
+
+
 void promptInput(sf::RenderWindow& window, sf::Font& font, std::string& sport, std::string& event) {
     // Prompts
     sf::Text sportPrompt("Enter Sport: ", font, 30);
@@ -167,11 +196,11 @@ void promptInput(sf::RenderWindow& window, sf::Font& font, std::string& sport, s
     eventPrompt.setPosition(50, 100);
 
     // Options for sports and events
-    sf::Text sportOptions("Available Sports:\n1. Swimming\n2. Cycling\n3. Rowing", font, 20);
+    sf::Text sportOptions("Available Sports:\n1. Athletics\n2. Cycling\n3. Skiing\n4. Swimming\n5. Gymnastics", font, 20);
     sportOptions.setPosition(50, 200);
 
-    sf::Text eventOptions("Available Events:\n1. 50m Butterfly\n2. 200m Freestyle\n3. Floor Routine", font, 20);
-    eventOptions.setPosition(50, 300);
+    sf::Text eventOptions("Available Events:\n1. Athletics Events: 100m OR Marathon\n2. Cycling Events: Road Cycling OR Mountain Biking\n3. Skiing Events: Giant Slalom OR Super-G\n4. Swimming Events: Freestyle OR Butterfly\n5. Gymnastics Events: Floor Exercise OR Vault", font, 20);
+    eventOptions.setPosition(50, 350);
 
     // User input
     sf::Text sportText("", font, 30);
@@ -253,7 +282,7 @@ void promptInput(sf::RenderWindow& window, sf::Font& font, std::string& sport, s
 }
 
 // Main function
-int main() {
+/*int main() {
     vector<Athlete> athletes = loadAthleteData("athlete_data.csv");
     //vector<Athlete> athletes = loadAthleteData("olympic_athlete_performance_data.csv");
 
@@ -316,4 +345,61 @@ int main() {
     cout << "Country: " << bestAthlete.country << endl;
 
     return 0;
+}*/
+
+int main() {
+    //vector<Athlete> athletes = loadAthleteData("athlete_data.csv");
+    vector<Athlete> athletes = loadAthleteData("sports_performance_dataset.csv");
+
+    if (athletes.empty()) {
+        cerr << "No athlete data available!" << endl;
+        return 1;
+    }
+
+    sf::RenderWindow window(sf::VideoMode(800, 600), "Athlete Performance");
+
+    sf::Font font;
+    if (!font.loadFromFile("arial.ttf")) {
+        cerr << "Failed to load font!" << endl;
+        return 1;
+    }
+
+    string sport, event;
+
+    promptInput(window, font, sport, event);
+
+    vector<Athlete> filteredAthletes = filterBySportAndEvent(athletes, sport, event);
+
+    if (filteredAthletes.empty()) {
+        cout << "No athletes found for the specified sport and event!" << endl;
+        return 1;
+    }
+
+    // Measure time for Merge Sort
+    auto startMerge = chrono::high_resolution_clock::now();
+    mergeSort(filteredAthletes, 0, filteredAthletes.size() - 1);
+    auto endMerge = chrono::high_resolution_clock::now();
+    chrono::duration<double> durationMerge = endMerge - startMerge;
+
+    // Measure time for Quick Sort
+    auto startQuick = chrono::high_resolution_clock::now();
+    quickSort(filteredAthletes, 0, filteredAthletes.size() - 1);
+    auto endQuick = chrono::high_resolution_clock::now();
+    chrono::duration<double> durationQuick = endQuick - startQuick;
+
+    // Display the best performance
+    Athlete bestAthlete = filteredAthletes[0];
+
+    displayBestPerformance(window, bestAthlete, durationMerge.count(), durationQuick.count());
+
+    while (window.isOpen()) {
+        sf::Event event;
+        while (window.pollEvent(event)) {
+            if (event.type == sf::Event::Closed)
+                window.close();
+        }
+    }
+
+    return 0;
 }
+
