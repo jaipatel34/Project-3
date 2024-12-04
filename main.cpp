@@ -175,7 +175,7 @@ void displayBestPerformance(sf::RenderWindow& window, const Athlete& bestAthlete
     window.draw(quickSortText);
 
     // Display Best Athlete Details
-    string athleteDetails = "Best Performance:\nAthlete: " + bestAthlete.name +
+    string athleteDetails = "Best Performance:\nID: "+to_string(bestAthlete.id) + "\nAthlete: " + bestAthlete.name +
                             "\nTime: " + to_string(bestAthlete.race_time) +
                             " seconds\nCountry: " + bestAthlete.country;
     sf::Text athleteText(athleteDetails, font, 20);
