@@ -29,7 +29,7 @@ vector<Athlete> GetAthleteCSVData(const string& filename) {
     vector<Athlete> athletes;
     ifstream file(filename);
     if (!file.is_open()) {
-        cerr << "File is not opening" << filename << endl;
+        cerr << "File is not opening" << endl;
         return athletes;
     }
 
@@ -39,11 +39,11 @@ vector<Athlete> GetAthleteCSVData(const string& filename) {
     while (getline(file, line)) {
         istringstream stream(line);
         Athlete athlete;
-        string value;
+        string val;
 
-        getline(stream, value, ',');
-        athlete.id = stoi(value);
-
+        // Read ID Number (first value)
+        getline(stream, val, ',');
+        athlete.id = stoi(val);
 
         // Read Athlete Name (second value)
         getline(stream, athlete.name, ',');
@@ -55,9 +55,8 @@ vector<Athlete> GetAthleteCSVData(const string& filename) {
         getline(stream, athlete.event, ',');
 
         // Read Race Time (fifth value)
-        getline(stream, value, ',');
-        athlete.performance_time = stod(value);
-
+        getline(stream, val, ',');
+        athlete.performance_time = stod(val);
 
         // Read Country (sixth value)
         getline(stream, athlete.country, ',');
@@ -68,6 +67,7 @@ vector<Athlete> GetAthleteCSVData(const string& filename) {
     return athletes;
 }
 
+//Pre-Lecture Video Cited
 void merge(vector<Athlete>& athletes, int left, int middle, int right) {
     int n1 = middle - left + 1;
     int n2 = right - middle;
@@ -86,7 +86,8 @@ void merge(vector<Athlete>& athletes, int left, int middle, int right) {
         if (L[i].performance_time <= R[j].performance_time) {
             athletes[q] = L[i];
             i++;
-        } else {
+        }
+        else {
             athletes[q] = R[j];
             j++;
 
@@ -104,6 +105,7 @@ void merge(vector<Athlete>& athletes, int left, int middle, int right) {
     }
 }
 
+//Pre- Lecture Video Cited
 void mergeSort(vector<Athlete>& athletes, int left, int right) {
     if (left < right) {
         int middle = left + (right - left) / 2;
@@ -116,12 +118,11 @@ void mergeSort(vector<Athlete>& athletes, int left, int right) {
 }
 
 
-
 int partition(vector<Athlete>& athletes, int low, int high) {
     double piv = athletes[high].performance_time;
-    int part = low - 1; // Partition index
+    int part = low - 1;
 
-    for (int j = low; j < high; ++j) {
+    for (int j = low; j < high; j++) {
         if (athletes[j].performance_time <= piv) {
             part++;
             swap(athletes[part], athletes[j]);
@@ -131,6 +132,7 @@ int partition(vector<Athlete>& athletes, int low, int high) {
     return part + 1;
 }
 
+//Pre- Lecture Video Cited
 void quickSort(vector<Athlete>& athletes, int low, int high) {
     if (low < high) {
         int piv = partition(athletes, low, high);
@@ -140,137 +142,105 @@ void quickSort(vector<Athlete>& athletes, int low, int high) {
     }
 }
 
-vector<Athlete> filterBySportAndEvent(const vector<Athlete>& athletes, const string& sport, const string& event) {
-    vector<Athlete> filtered;
+//look at event and sport 
+vector<Athlete> checkEandS(const vector<Athlete>& athletes, const string& sport, const string& event) {
+    vector<Athlete> newSE;
     for (const auto& athlete : athletes) {
-        if (athlete.sport == sport && athlete.event == event) {
-            filtered.push_back(athlete);
+        if (athlete.event == event && athlete.sport == sport) {
+            newSE.push_back(athlete);
         }
     }
-    return filtered;
+    return newSE;
 }
 
-// Display using SFML
-void displayBestPerformance(sf::RenderWindow& window, const Athlete& bestAthlete, double mergeSortTime, double quickSortTime) {
-    sf::Font font;
-    font.loadFromFile("arial.ttf");
+//first screen
+void UserInputScreen(sf::RenderWindow& window, sf::Font& font, string& sport, string& event) {
+    sf::Text SportName("Enter Sport: ", font, 30);
+    SportName.setPosition(50, 50);
 
-    window.clear(sf::Color::White);
+    sf::Text EventName("Enter Event: ", font, 30);
+    EventName.setPosition(50, 100);
 
+    sf::Text AvailableSports("Available Sports:\n1. Athletics\n2. Cycling\n3. Skiing\n4. Swimming\n5. Gymnastics", font, 20);
+    AvailableSports.setPosition(50, 200);
 
+    sf::Text AvailableEvents("Available Events:\n1. Athletics Events: 100m OR Marathon\n2. Cycling Events: Road Cycling OR Mountain Biking\n3. Skiing Events: Giant Slalom OR Super-G\n4. Swimming Events: Freestyle OR Butterfly\n5. Gymnastics Events: Floor Exercise OR Vault", font, 20);
+    AvailableEvents.setPosition(50, 350);
 
-    // Merge Sort Time
-    sf::Text mergeSortText("Merge Sort Time: " +to_string(mergeSortTime) + " seconds", font, 20);
-    mergeSortText.setFillColor(sf::Color::Black);
-    mergeSortText.setPosition(10, 10);
-    window.draw(mergeSortText);
+    sf::Text UserSport("", font, 30);
+    sf::Text UserEvent("", font, 30);
+    UserSport.setPosition(SportName.getPosition().x + SportName.getGlobalBounds().width + 5, SportName.getPosition().y);
+    UserEvent.setPosition(EventName.getPosition().x + EventName.getGlobalBounds().width + 5, EventName.getPosition().y);
 
-    // Quick Sort Time
-    sf::Text quickSortText("Quick Sort Time: " + to_string(quickSortTime) + " seconds", font, 20);
-    quickSortText.setFillColor(sf::Color::Black);
-    quickSortText.setPosition(10, 40);
-    window.draw(quickSortText);
-
-    // Best Athlete Details
-    string athleteDetails = "Best Performance:\nID: "+to_string(bestAthlete.id) + "\nAthlete: " + bestAthlete.name +
-                            "\nTime: " + to_string(bestAthlete.performance_time) +
-                            " seconds\nCountry: " + bestAthlete.country;
-    sf::Text athleteText(athleteDetails, font, 20);
-    athleteText.setFillColor(sf::Color::Black);
-    athleteText.setPosition(10, 80);
-    window.draw(athleteText);
-
-    window.display();
-}
-
-
-void promptInput(sf::RenderWindow& window, sf::Font& font, string& sport, string& event) {
-    sf::Text sportPrompt("Enter Sport: ", font, 30);
-    sportPrompt.setPosition(50, 50);
-
-    sf::Text eventPrompt("Enter Event: ", font, 30);
-    eventPrompt.setPosition(50, 100);
-
-    sf::Text sportOptions("Available Sports:\n1. Athletics\n2. Cycling\n3. Skiing\n4. Swimming\n5. Gymnastics", font, 20);
-    sportOptions.setPosition(50, 200);
-
-    sf::Text eventOptions("Available Events:\n1. Athletics Events: 100m OR Marathon\n2. Cycling Events: Road Cycling OR Mountain Biking\n3. Skiing Events: Giant Slalom OR Super-G\n4. Swimming Events: Freestyle OR Butterfly\n5. Gymnastics Events: Floor Exercise OR Vault", font, 20);
-    eventOptions.setPosition(50, 350);
-
-    sf::Text sportText("", font, 30);
-    sf::Text eventText("", font, 30);
-    sportText.setPosition(sportPrompt.getPosition().x + sportPrompt.getGlobalBounds().width + 5, sportPrompt.getPosition().y);
-    eventText.setPosition(eventPrompt.getPosition().x + eventPrompt.getGlobalBounds().width + 5, eventPrompt.getPosition().y);
-
-    sf::Text inputText("", font, 30);
-    string currentInput = "";
-    bool enteringSport = true;
+    sf::Text inputAnswer("", font, 30);
+    string currAnswer = "";
+    bool newSport = true;
 
     sf::RectangleShape cursor(sf::Vector2f(2, 30));
     cursor.setFillColor(sf::Color::White);
 
     sf::Clock clock;
-    bool cursorVisible = true;
+    bool cursorOutput = true;
 
     while (window.isOpen()) {
-        sf::Event eventSFML;
-        while (window.pollEvent(eventSFML)) {
-            if (eventSFML.type == sf::Event::Closed) {
+        sf::Event WindowE;
+        while (window.pollEvent(WindowE)) {
+            if (WindowE.type == sf::Event::Closed) {
                 window.close();
                 return;
             }
 
-            if (eventSFML.type == sf::Event::TextEntered) {
-                if (eventSFML.text.unicode == '\b' && !currentInput.empty()) {
-                    currentInput.pop_back();
+            if (WindowE.type == sf::Event::TextEntered) {
+                if (!currAnswer.empty() && WindowE.text.unicode == '\b') {
+                    currAnswer.pop_back();
                 }
-                else if (eventSFML.text.unicode == '\r') {
-                    if (enteringSport) {
-                        sport = currentInput;
-                        sportText.setString(sport);
-                        enteringSport = false;
-                        currentInput = "";
+                else if (WindowE.text.unicode == '\r') {
+                    if (newSport) {
+                        sport = currAnswer;
+                        UserSport.setString(sport);
+                        newSport = false;
+                        currAnswer = "";
                     }
                     else {
-                        event = currentInput;
-                        eventText.setString(event);
+                        event = currAnswer;
+                        UserEvent.setString(event);
                         return;
                     }
                 }
-                else if (eventSFML.text.unicode < 128) {
-                    currentInput += static_cast<char>(eventSFML.text.unicode);
+                else if (WindowE.text.unicode < 128) {
+                    currAnswer += char(WindowE.text.unicode);
                 }
             }
         }
 
-        inputText.setString(currentInput);
+        inputAnswer.setString(currAnswer);
 
-        if (!enteringSport) {
-            inputText.setPosition(eventText.getPosition().x + eventText.getGlobalBounds().width + 5, eventText.getPosition().y);
+        if (!newSport) {
+            inputAnswer.setPosition(UserEvent.getPosition().x + UserEvent.getGlobalBounds().width + 5, UserEvent.getPosition().y);
 
         }
         else {
-            inputText.setPosition(sportText.getPosition().x + sportText.getGlobalBounds().width + 5, sportText.getPosition().y);
+            inputAnswer.setPosition(UserSport.getPosition().x + UserSport.getGlobalBounds().width + 5, UserSport.getPosition().y);
         }
 
-        cursor.setPosition(inputText.getPosition().x + inputText.getGlobalBounds().width + 2, inputText.getPosition().y);
+        cursor.setPosition(inputAnswer.getPosition().x + inputAnswer.getGlobalBounds().width + 2, inputAnswer.getPosition().y);
 
         if (clock.getElapsedTime().asMilliseconds() > 400) {
-            cursorVisible = !cursorVisible;
+            cursorOutput = !cursorOutput;
             clock.restart();
         }
 
         window.clear(sf::Color::Black);
-        window.draw(sportPrompt);
-        window.draw(eventPrompt);
-        window.draw(sportText);
-        window.draw(eventText);
-        window.draw(inputText);
+        window.draw(inputAnswer);
+        window.draw(AvailableSports);
+        window.draw(AvailableEvents);
+        window.draw(SportName);
+        window.draw(EventName);
+        window.draw(UserSport);
+        window.draw(UserEvent);
 
-        window.draw(sportOptions);
-        window.draw(eventOptions);
 
-        if (cursorVisible) {
+        if (cursorOutput) {
             window.draw(cursor);
         }
 
@@ -278,58 +248,110 @@ void promptInput(sf::RenderWindow& window, sf::Font& font, string& sport, string
     }
 }
 
+// Second Screen
+void PerformanceTimeAndInfoScreen(sf::RenderWindow& window, const Athlete& bestAthlete, double mergeSortTime, double quickSortTime) {
+    sf::Font font;
+    font.loadFromFile("arial.ttf");
+
+    window.clear(sf::Color::White);
+    
+
+    // Merge Sort Time
+    sf::Text mergeSortInfo("Merge Sort Time: " +to_string(mergeSortTime) + " seconds", font, 20);
+    mergeSortInfo.setFillColor(sf::Color::Black);
+    mergeSortInfo.setPosition(10, 10);
+    window.draw(mergeSortInfo);
+
+    // Quick Sort Time
+    sf::Text quickSortInfo("Quick Sort Time: " + to_string(quickSortTime) + " seconds", font, 20);
+    quickSortInfo.setFillColor(sf::Color::Black);
+    quickSortInfo.setPosition(10, 40);
+    window.draw(quickSortInfo);
+
+    // Best Athlete Info
+    string athleteInfo = "Best Performance:\nID: "+to_string(bestAthlete.id) + "\nAthlete: " + bestAthlete.name +
+                            "\nTime: " + to_string(bestAthlete.performance_time) +
+                            " seconds\nCountry: " + bestAthlete.country;
+    sf::Text athleteText(athleteInfo, font, 20);
+    athleteText.setFillColor(sf::Color::Black);
+    athleteText.setPosition(10, 80);
+    window.draw(athleteText);
+
+    string upperName = bestAthlete.name;
+    transform(upperName.begin(), upperName.end(), upperName.begin(), ::toupper);
+
+    string Congrats = "CONGRATULATIONSSSSS \n" +upperName +"!!!!!!!!!";
+    sf::Text congratsText(Congrats, font, 55);
+    congratsText.setFillColor(sf::Color::Blue);
+    congratsText.setPosition(10, 200);
+    window.draw(congratsText);
+
+    string CongratsN = "WOOOOOOOOOOOOOOO\nHOOOOOOOOOOOOOOOO\n!!!!!!!!!!!!!";
+    sf::Text congratssText(CongratsN, font, 55);
+    congratssText.setFillColor(sf::Color(245, 170, 0));
+    congratssText.setPosition(10, 350);
+    window.draw(congratssText);
+
+
+    window.display();
+}
+
+
+
+
 
 int main() {
-    //vector<Athlete> athletes = GetAthleteCSVData("athlete_data.csv");
+    // Dataset with 100
+    //vector<Athlete> athletes = GetAthleteCSVData("sports_performance_dataset_TEST.csv");
+
+    // Dataset with 100001
     vector<Athlete> athletes = GetAthleteCSVData("sports_performance_dataset.csv");
 
     if (athletes.empty()) {
-        cerr << "No athlete data available!" << endl;
+        cerr << "Athlete Data is not available!\nPlease Try Again" << endl;
         return 1;
     }
 
-    sf::RenderWindow window(sf::VideoMode(800, 600), "Athlete Performance");
+    sf::RenderWindow window(sf::VideoMode(800, 600), "Who's the Best Athlete!");
 
     sf::Font font;
-    if (!font.loadFromFile("arial.ttf")) {
-        cerr << "Failed to load font!" << endl;
-        return 1;
-    }
+    font.loadFromFile("arial.ttf");
 
-    string sport, event;
+    string sport;
+    string event;
 
-    promptInput(window, font, sport, event);
+    UserInputScreen(window, font, sport, event);
 
-    vector<Athlete> filteredAthletes = filterBySportAndEvent(athletes, sport, event);
+    vector<Athlete> NewAthletes = checkEandS(athletes, sport, event);
 
-    if (filteredAthletes.empty()) {
-        cout << "No athletes found for the specified sport and event!" << endl;
+    if (NewAthletes.empty()) {
+        cout << "No athlete found for your input of the sport and event!" << endl;
         return 1;
     }
 
     // Measure time for Merge Sort
-    auto startMerge = chrono::high_resolution_clock::now();
-    mergeSort(filteredAthletes, 0, filteredAthletes.size() - 1);
-    auto endMerge = chrono::high_resolution_clock::now();
-    chrono::duration<double> durationMerge = endMerge - startMerge;
+    auto firstMerge = chrono::high_resolution_clock::now();
+    mergeSort(NewAthletes, 0, NewAthletes.size() - 1);
+    auto secondMerge = chrono::high_resolution_clock::now();
+    chrono::duration<double> TotalMergeTime = secondMerge - firstMerge;
 
 
     // Measure time for Quick Sort
-    auto startQuick = chrono::high_resolution_clock::now();
-    quickSort(filteredAthletes, 0, filteredAthletes.size() - 1);
-    auto endQuick = chrono::high_resolution_clock::now();
-    chrono::duration<double> durationQuick = endQuick - startQuick;
+    auto firstQuick = chrono::high_resolution_clock::now();
+    quickSort(NewAthletes, 0, NewAthletes.size() - 1);
+    auto secondQuick = chrono::high_resolution_clock::now();
+    chrono::duration<double> TotalQuickTime = secondQuick - firstQuick;
 
 
-    // Display the best performance
-    Athlete bestAthlete = filteredAthletes[0];
+    // Show the best time
+    Athlete bestAthlete = NewAthletes[0];
 
-    displayBestPerformance(window, bestAthlete, durationMerge.count(), durationQuick.count());
+    PerformanceTimeAndInfoScreen(window, bestAthlete, TotalMergeTime.count(), TotalQuickTime.count());
 
     while (window.isOpen()) {
-        sf::Event event;
-        while (window.pollEvent(event)) {
-            if (event.type == sf::Event::Closed)
+        sf::Event even;
+        while (window.pollEvent(even)) {
+            if (even.type == sf::Event::Closed)
                 window.close();
         }
     }
