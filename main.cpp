@@ -15,12 +15,12 @@ using namespace std;
 
 //Athlete struct
 struct Athlete {
-    int id;
-    std::string name;
-    std::string sport;
-    std::string event;
-    double race_time;
-    std::string country;
+    int id{};
+    string name;
+    string sport;
+    string event;
+    float performance_time{};
+    string country;
 };
 
 
@@ -61,7 +61,7 @@ vector<Athlete> loadAthleteData(const string& filename) {
         // Read Race Time (fifth value)
         getline(stream, value, ',');
         try {
-            athlete.race_time = stod(value);
+            athlete.performance_time = stod(value);
         } catch (const invalid_argument& e) {
             cerr << "Invalid race time value: " << value << endl;
             continue;
@@ -77,10 +77,10 @@ vector<Athlete> loadAthleteData(const string& filename) {
 }
 
 // Merge Sort implementation
-void merge(std::vector<Athlete>& athletes, int left, int mid, int right) {
+void merge(vector<Athlete>& athletes, int left, int mid, int right) {
     int n1 = mid - left + 1;
     int n2 = right - mid;
-    std::vector<Athlete> L(n1), R(n2);
+    vector<Athlete> L(n1), R(n2);
 
     for (int i = 0; i < n1; ++i)
         L[i] = athletes[left + i];
@@ -89,7 +89,7 @@ void merge(std::vector<Athlete>& athletes, int left, int mid, int right) {
 
     int i = 0, j = 0, k = left;
     while (i < n1 && j < n2) {
-        if (L[i].race_time <= R[j].race_time) {
+        if (L[i].performance_time <= R[j].performance_time) {
             athletes[k++] = L[i++];
         } else {
             athletes[k++] = R[j++];
@@ -104,7 +104,7 @@ void merge(std::vector<Athlete>& athletes, int left, int mid, int right) {
     }
 }
 
-void mergeSort(std::vector<Athlete>& athletes, int left, int right) {
+void mergeSort(vector<Athlete>& athletes, int left, int right) {
     if (left < right) {
         int mid = left + (right - left) / 2;
         mergeSort(athletes, left, mid);
@@ -115,28 +115,29 @@ void mergeSort(std::vector<Athlete>& athletes, int left, int right) {
 
 
 // Quick Sort implementation
-int partition(std::vector<Athlete>& athletes, int low, int high) {
-    double pivot = athletes[high].race_time;
+int partition(vector<Athlete>& athletes, int low, int high) {
+    double pivot = athletes[high].performance_time;
     int i = (low - 1);
     for (int j = low; j < high; ++j) {
-        if (athletes[j].race_time <= pivot) {
+        if (athletes[j].performance_time <= pivot) {
             ++i;
-            std::swap(athletes[i], athletes[j]);
+            swap(athletes[i], athletes[j]);
         }
     }
-    std::swap(athletes[i + 1], athletes[high]);
+    swap(athletes[i + 1], athletes[high]);
     return (i + 1);
 }
 
-void quickSort(std::vector<Athlete>& athletes, int low, int high) {
+void quickSort(vector<Athlete>& athletes, int low, int high) {
     if (low < high) {
         int pi = partition(athletes, low, high);
         quickSort(athletes, low, pi - 1);
         quickSort(athletes, pi + 1, high);
     }
 }
-std::vector<Athlete> filterBySportAndEvent(const std::vector<Athlete>& athletes, const std::string& sport, const std::string& event) {
-    std::vector<Athlete> filtered;
+
+vector<Athlete> filterBySportAndEvent(const vector<Athlete>& athletes, const string& sport, const string& event) {
+    vector<Athlete> filtered;
     for (const auto& athlete : athletes) {
         if (athlete.sport == sport && athlete.event == event) {
             filtered.push_back(athlete);
@@ -144,11 +145,11 @@ std::vector<Athlete> filterBySportAndEvent(const std::vector<Athlete>& athletes,
     }
     return filtered;
 }
-vector<Athlete> athletes = loadAthleteData("athlete_data.csv");
-string sport, event;
+//vector<Athlete> athletes = loadAthleteData("athlete_data.csv");
+//string sport, event;
 
 
-vector<Athlete> filteredAthletes = filterBySportAndEvent(athletes, sport, event);
+//vector<Athlete> filteredAthletes = filterBySportAndEvent(athletes, sport, event);
 
 // Display using SFML
 void displayBestPerformance(sf::RenderWindow& window, const Athlete& bestAthlete, double mergeSortTime, double quickSortTime) {
@@ -176,7 +177,7 @@ void displayBestPerformance(sf::RenderWindow& window, const Athlete& bestAthlete
 
     // Display Best Athlete Details
     string athleteDetails = "Best Performance:\nID: "+to_string(bestAthlete.id) + "\nAthlete: " + bestAthlete.name +
-                            "\nTime: " + to_string(bestAthlete.race_time) +
+                            "\nTime: " + to_string(bestAthlete.performance_time) +
                             " seconds\nCountry: " + bestAthlete.country;
     sf::Text athleteText(athleteDetails, font, 20);
     athleteText.setFillColor(sf::Color::Black);
@@ -187,7 +188,7 @@ void displayBestPerformance(sf::RenderWindow& window, const Athlete& bestAthlete
 }
 
 
-void promptInput(sf::RenderWindow& window, sf::Font& font, std::string& sport, std::string& event) {
+void promptInput(sf::RenderWindow& window, sf::Font& font, string& sport, string& event) {
     // Prompts
     sf::Text sportPrompt("Enter Sport: ", font, 30);
     sportPrompt.setPosition(50, 50);
@@ -210,7 +211,7 @@ void promptInput(sf::RenderWindow& window, sf::Font& font, std::string& sport, s
 
     // Input handling
     sf::Text inputText("", font, 30);
-    std::string currentInput = "";
+    string currentInput = "";
     bool enteringSport = true;
 
     sf::RectangleShape cursor(sf::Vector2f(2, 30)); // Thin vertical line
@@ -281,71 +282,6 @@ void promptInput(sf::RenderWindow& window, sf::Font& font, std::string& sport, s
     }
 }
 
-// Main function
-/*int main() {
-    vector<Athlete> athletes = loadAthleteData("athlete_data.csv");
-    //vector<Athlete> athletes = loadAthleteData("olympic_athlete_performance_data.csv");
-
-    if (athletes.empty()) {
-        cerr << "No athlete data available!" << endl;
-        return 1;
-    }
-
-    sf::RenderWindow window(sf::VideoMode(800, 600), "Best Performance");
-
-    sf::Font font;
-    if (!font.loadFromFile("arial.ttf")) {
-        cerr << "Failed to load font!" << endl;
-        return 1;
-    }
-
-    string sport, event;
-
-    promptInput(window, font, sport, event);
-
-    vector<Athlete> filteredAthletes = filterBySportAndEvent(athletes, sport, event);
-
-    if (filteredAthletes.empty()) {
-        cout << "No athletes found for the specified sport and event!" << endl;
-        return 1;
-    }
-
-    // Measure time for Merge Sort
-    auto startMerge = chrono::high_resolution_clock::now();
-    mergeSort(filteredAthletes, 0, filteredAthletes.size() - 1);
-    auto endMerge = chrono::high_resolution_clock::now();
-    chrono::duration<double> durationMerge = endMerge - startMerge;
-    cout << "Merge Sort Time: " << durationMerge.count() << " seconds" << endl;
-
-    // Measure time for Quick Sort
-    auto startQuick = chrono::high_resolution_clock::now();
-    quickSort(filteredAthletes, 0, filteredAthletes.size() - 1);
-    auto endQuick = chrono::high_resolution_clock::now();
-    chrono::duration<double> durationQuick = endQuick - startQuick;
-    cout << "Quick Sort Time: " << durationQuick.count() << " seconds" << endl;
-
-    // Display the best performance
-    Athlete bestAthlete = filteredAthletes[0];
-
-    // Display using SFML
-    displayBestPerformance(window, bestAthlete);
-
-    while (window.isOpen()) {
-        sf::Event event;
-        while (window.pollEvent(event)) {
-            if (event.type == sf::Event::Closed)
-                window.close();
-        }
-    }
-
-    // best performance details
-    cout << "Best Performance:" << endl;
-    cout << "Athlete: " << bestAthlete.name << endl;
-    cout << "Time: " << bestAthlete.race_time << " seconds" << endl;
-    cout << "Country: " << bestAthlete.country << endl;
-
-    return 0;
-}*/
 
 int main() {
     //vector<Athlete> athletes = loadAthleteData("athlete_data.csv");
@@ -381,11 +317,13 @@ int main() {
     auto endMerge = chrono::high_resolution_clock::now();
     chrono::duration<double> durationMerge = endMerge - startMerge;
 
+
     // Measure time for Quick Sort
     auto startQuick = chrono::high_resolution_clock::now();
     quickSort(filteredAthletes, 0, filteredAthletes.size() - 1);
     auto endQuick = chrono::high_resolution_clock::now();
     chrono::duration<double> durationQuick = endQuick - startQuick;
+
 
     // Display the best performance
     Athlete bestAthlete = filteredAthletes[0];
@@ -399,6 +337,7 @@ int main() {
                 window.close();
         }
     }
+
 
     return 0;
 }
