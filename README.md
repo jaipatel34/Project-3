@@ -57,7 +57,7 @@
 
 ---
 
-## Usage
+## How to Use
 1. **Launch the Program**  
    - Enter a valid sport (e.g., Swimming)
    - Enter a valid event (e.g., Freestyle)
