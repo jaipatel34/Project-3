@@ -31,24 +31,6 @@
 
 ---
 
-## How It Works
-1. **Data Loading**  
-   The program reads athlete data from a CSV file (e.g., `sports_performance_dataset.csv`).
-   
-3. **User Input**  
-   A graphical interface asks the user to input a sport and an event.
-
-4. **Filtering**  
-   Filters athletes by the selected sport and event.
-
-5. **Sorting**  
-   Applies Merge Sort and Quick Sort to sort the filtered athletes by best performance time.
-
-6. **Best Athlete**  
-   Displays the fastest athlete's information along with the sorting times.
-
----
-
 ## Prerequisites
    - **C++14 or later**
    - **SFML** (Simple and Fast Multimedia Library)
