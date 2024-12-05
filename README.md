@@ -63,9 +63,10 @@
    Enter a valid event (e.g., Freestyle)
 
 2. **View Results**
--  Sorting times for Merge Sort and Quick Sort.
--  Best athlete's details.
--  A congratulatory message.
+   -  Sorting times for Merge Sort and Quick Sort.
+   -  Best athlete's details.
+   -  A congratulatory message.
+   
 3. **Close the Window**
    Close the graphical window to exit the program.
  
