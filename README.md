@@ -50,10 +50,10 @@
 ---
 
 ## Prerequisites
-- **C++14 or later**
-- **SFML** (Simple and Fast Multimedia Library)
-- A valid **CSV dataset** with the following columns in this order:  
-  `ID, Name, Sport, Event, Performance Time, Country`
+   - **C++14 or later**
+   - **SFML** (Simple and Fast Multimedia Library)
+   - A valid **CSV dataset** with the following columns in this order:  
+     `ID, Name, Sport, Event, Performance Time, Country`
 
 ---
 
@@ -67,6 +67,6 @@
    -  Best athlete's details.
    -  A congratulatory message.
    
-3. **Close the Window**
+4. **Close the Window**
    Close the graphical window to exit the program.
  
