@@ -68,5 +68,5 @@
    -  A congratulatory message.
    
 4. **Close the Window**
-   Close the graphical window to exit the program.
+   - Close the graphical window to exit the program.
  
