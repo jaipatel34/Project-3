@@ -1,11 +1,11 @@
 # Who's the Best Athlete?
 
 ## Project Description
-"Who's the Best Athlete?" is a C++ application that analyzes and displays sports performance data using CSV files. The program allows users to:
+"Who's the Best Athlete?" is a C++ application that analyzes and shows sports performance data using CSV files. The program allows users to:
 - Filter athletes by sport and event.
 - Sort athletes by performance time using **Merge Sort** and **Quick Sort**.
 - Compare sorting algorithm performance in terms of execution time.
-- Display detailed information and congratulate the best athlete in an interactive graphical interface powered by **SFML** (Simple and Fast Multimedia Library).
+- Display detailed information and congratulate the best athlete in an interactive graphical interface by **SFML** (Simple and Fast Multimedia Library).
 
 ---
 
@@ -14,17 +14,17 @@
    The program reads athlete data from a CSV file, processes it into a `struct`, and stores it in a `vector`.
 
 2. **Sorting Algorithms**
-   - **Merge Sort**: Stable and efficient for large datasets.
-   - **Quick Sort**: Faster for most scenarios with average-case performance.
+   - **Merge Sort**
+   - **Quick Sort**
 
-3. **Interactive User Input**  
+3. **User Input**  
    Users input their desired **sport** and **event** using a graphical interface.
 
 4. **Performance Metrics**  
    Displays the execution time for both sorting algorithms.
 
-5. **Graphical Output**  
-   SFML is used to display:
+5. **Graphical Result**  
+   SFML is used to show:
    - The fastest athlete's information.
    - Execution times of sorting algorithms.
    - A congratulatory message.
@@ -33,28 +33,26 @@
 
 ## How It Works
 1. **Data Loading**  
-   The program reads athlete data from a CSV file (e.g., `sports_performance_dataset.csv`).  
-   Data is stored in a vector of `Athlete` structs.
+   The program reads athlete data from a CSV file (e.g., `sports_performance_dataset.csv`).
+   
+3. **User Input**  
+   A graphical interface asks the user to input a sport and an event.
 
-2. **User Input**  
-   A graphical interface prompts the user to input a sport and an event.
-
-3. **Filtering**  
+4. **Filtering**  
    Filters athletes by the selected sport and event.
 
-4. **Sorting**  
-   Applies Merge Sort and Quick Sort to sort the filtered athletes by performance time.
+5. **Sorting**  
+   Applies Merge Sort and Quick Sort to sort the filtered athletes by best performance time.
 
-5. **Best Athlete**  
-   Displays the fastest athlete's details along with the sorting times.
+6. **Best Athlete**  
+   Displays the fastest athlete's information along with the sorting times.
 
 ---
 
 ## Prerequisites
-- **C++17 or later**
+- **C++14 or later**
 - **SFML** (Simple and Fast Multimedia Library)
-  - Download from [SFML's official website](https://www.sfml-dev.org/).
-- A valid **CSV dataset** with the following columns:  
+- A valid **CSV dataset** with the following columns in this order:  
   `ID, Name, Sport, Event, Performance Time, Country`
 
 ---
