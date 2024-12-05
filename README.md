@@ -59,9 +59,8 @@
 
 ## Usage
 1. **Launch the Program**  
-   Enter a valid sport (e.g., Swimming)
-   
-   Enter a valid event (e.g., Freestyle)
+   - Enter a valid sport (e.g., Swimming)
+   - Enter a valid event (e.g., Freestyle)
 
 3. **View Results**
    -  Sorting times for Merge Sort and Quick Sort.
