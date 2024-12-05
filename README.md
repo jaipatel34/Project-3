@@ -60,9 +60,10 @@
 ## Usage
 1. **Launch the Program**  
    Enter a valid sport (e.g., Swimming)
+   
    Enter a valid event (e.g., Freestyle)
 
-2. **View Results**
+3. **View Results**
    -  Sorting times for Merge Sort and Quick Sort.
    -  Best athlete's details.
    -  A congratulatory message.
